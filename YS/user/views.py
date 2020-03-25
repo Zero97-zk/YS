@@ -116,7 +116,7 @@ def users(request, id=None):
             user.save()
         except Exception as e:
             # print(e)
-            res = {'code': 10007, 'error': e}
+            res = {'code': 10007, 'error': str(e)}
             return JsonResponse(res)
         res = {'code':200, 'id':int(id)}
         return JsonResponse(res)
@@ -150,7 +150,7 @@ def avatar(request, id):
     try:
         user.save()
     except Exception as e:
-        res = {'code': 10011, 'error':e}
+        res = {'code': 10011, 'error':str(e)}
         return JsonResponse(res)
     res = {'code': 200, 'id':int(id)}
     return JsonResponse(res)
