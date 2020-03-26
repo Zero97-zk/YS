@@ -18,6 +18,7 @@ def test(request):
 
 @logging_check('PUT')
 def users(request, id=None):
+    id = int(id) if id else None
     if request.method == 'GET':
         user = None
         try:
@@ -121,8 +122,10 @@ def users(request, id=None):
         res = {'code':200, 'id':int(id)}
         return JsonResponse(res)
 
+
 @logging_check('POST')
 def avatar(request, id):
+    id = int(id) if id else None
     # 用户上传头像
     if request.method != 'POST':
         res = {'code':10009, 'error': 'Request method is wrong!!'}
