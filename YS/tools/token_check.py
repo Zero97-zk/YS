@@ -45,3 +45,18 @@ def logging_check(*method):
             return func(request, *args, **kwargs)
         return wrapper
     return _logging_check
+
+def get_user(request):
+    token = request.META.get('HTTP_AUTHORIZATION')
+    if not token:
+        return None
+    try:
+        res = jwt.decode(token, KEY)
+    except Exception as e:
+        return None
+    u_id = res.get('id')
+    try:
+        user = User.objects.get(id=u_id)
+    except Exception as e:
+        return None
+    return user
