@@ -17,6 +17,7 @@ class Topic(models.Model):
     like_users = models.ManyToManyField(User, related_name='like_topics', through='TopicLikeUser')
     collect_users = models.ManyToManyField(User, related_name='collect_topics', through='TopicCollectUser')
     limit = models.CharField('权限', max_length=20, choices=(('public', '公开'), ('private', '不公开')), default='public')
+    message_count = models.IntegerField('评论数量', default=0)
 
     class Meta:
         db_table = 'topic'

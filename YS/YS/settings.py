@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'user',
     'ytoken',
-    'topic'
+    'topic',
+    'message'
 ]
 
 MIDDLEWARE = [
