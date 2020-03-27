@@ -13,8 +13,8 @@ from YS.settings import BASE_DIR
 
 # Create your views here.
 
-def test(request):
-    return HttpResponse('ok')
+# def test(request):
+#     return HttpResponse('ok')
 
 @logging_check('PUT')
 def users(request, id=None):

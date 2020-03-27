@@ -22,10 +22,12 @@ from YS import settings
 urlpatterns = [
     url(r'admin/', admin.site.urls),
     # http://127.0.0.1:8000/api/v1/users
-    url(r'^api/v1/users', include('user.urls')),
+    url(r'^api/v1/users/?', include('user.urls')),
     # http://127.0.0.1:8000/api/v1/ytoken
-    url(r'^api/v1/ytoken', include('ytoken.urls')),
+    url(r'^api/v1/ytoken/?', include('ytoken.urls')),
     # http://127.0.0.1:8000/api/v1/tipics
-    url(r'^api/v1/topics', include('topic.urls'))
+    url(r'^api/v1/topics/?', include('topic.urls')),
+    # http://127.0.0.1:8000/api/v1/messages
+    url(r'^api/v1/messages/?', include('message.urls'))
 
 ]

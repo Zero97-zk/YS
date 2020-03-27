@@ -2,9 +2,10 @@ import json
 
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.db.models import F
 
 from user.models import User
-from topic.models import Topic, TopicCollectUser
+from topic.models import Topic, TopicCollectUser, TopicLikeUser
 from tools.token_check import KEY, get_user, logging_check
 
 # Create your views here.
@@ -174,27 +175,34 @@ def collect_topics(request, u_id=None):
         # 查看某人收藏的文章
         res = get_collect_by_uid(u_id, look_user)
         return JsonResponse(res)
-    if request.method == 'POST':
+    elif request.method == 'POST':
         user = request.user
         query_post = request.body
         post_data = json.loads(query_post)
         if not post_data or not post_data.get('t_id'):
             return JsonResponse({'code': 10215, 'error': 'No data!'})
         t_id = post_data.get('t_id')
+        collection = TopicCollectUser.objects.filter(user_id=user.id, topic_id = t_id)
+        if collection:
+            return JsonResponse({'code':10223, 'error': 'You already collected!'})
         try:
             TopicCollectUser.objects.create(user_id=user.id, topic_id=t_id)
         except Exception as e:
             return JsonResponse({'code': 10216, 'error': str(e)})
+        try:
+            Topic.objects.filter(id=t_id).update(collect_count=F('collect_count')+1)
+        except Exception as e:
+            return JsonResponse({'code': 10224, 'error': str(e)})
         return JsonResponse({'code': 200})
-    if request.method == 'DELETE':
+    elif request.method == 'DELETE':
         user = request.user
         if not user:
             return JsonResponse({'code': 10218, 'error': 'No data!'})
-        query_post = request.body
-        post_data = json.loads(query_post)
-        if not post_data or not post_data.get('t_id'):
+        query_delete = request.body
+        delete_data = json.loads(query_delete)
+        if not delete_data or not delete_data.get('t_id'):
             return JsonResponse({'code': 10219, 'error': 'No data!'})
-        t_id = post_data.get('t_id')
+        t_id = delete_data.get('t_id')
         try:
             collection = TopicCollectUser.objects.get(user_id=user.id, topic_id=t_id)
         except Exception as e:
@@ -203,5 +211,71 @@ def collect_topics(request, u_id=None):
             collection.delete()
         except Exception as e:
             return JsonResponse({'code': 10221, 'error': str(e)})
+        try:
+            Topic.objects.filter(id=t_id).update(collect_count=F('collect_count')-1)
+        except Exception as e:
+            return JsonResponse({'code': 10225, 'error': str(e)})
         return JsonResponse({'code': 200})
 
+@logging_check('POST', 'DELETE')
+def like_topics(request, t_id=None):
+    t_id = int(t_id) if t_id else None
+    if request.method == 'GET':
+        pass
+    elif request.method == 'POST':
+        user = request.user
+        query_post = request.body
+        post_data = json.loads(query_post)
+        if not post_data or not post_data.get('t_id'):
+            return JsonResponse({'code': 10222, 'error': 'No data!'})
+        t_id = post_data.get('t_id')
+        like = TopicLikeUser.objects.filter(user_id=user.id, topic_id = t_id)
+        if like:
+            return JsonResponse({'code': 10226, 'error': 'You already Liked!'})
+        try:
+            TopicLikeUser.objects.create(user_id=user.id, topic_id=t_id)
+        except Exception as e:
+            return JsonResponse({'code': 10227, 'error': str(e)})
+        try:
+            Topic.objects.filter(id=t_id).update(like_count=F('collect_count')+1)
+        except Exception as e:
+            return JsonResponse({'code': 10228, 'error': str(e)})
+        return JsonResponse({'code': 200})
+
+    elif request.method == 'DELETE':
+        user = request.user
+        if not user:
+            return JsonResponse({'code': 10229, 'error': 'No data!'})
+        query_delete = request.body
+        delete_data = json.loads(query_delete)
+        if not delete_data or not delete_data.get('t_id'):
+            return JsonResponse({'code': 10230, 'error': 'No data!'})
+        t_id = delete_data.get('t_id')
+        try:
+            like = TopicLikeUser.objects.get(user_id=user.id, topic_id=t_id)
+        except Exception as e:
+            return JsonResponse({'code': 10231, 'error': str(e)})
+        try:
+            like.delete()
+        except Exception as e:
+            return JsonResponse({'code': 10232, 'error': str(e)})
+        try:
+            Topic.objects.filter(id=t_id).update(like_count=F('like_count') - 1)
+        except Exception as e:
+            return JsonResponse({'code': 10233, 'error': str(e)})
+        return JsonResponse({'code': 200})
+
+def watch_topics(request):
+    if request.method != 'POST':
+        return JsonResponse({'code': 10234, 'error': 'The method is wrong!'})
+    else:
+        query_post = request.body
+        post_data = json.loads(query_post)
+        if not post_data or not post_data.get('t_id'):
+            return JsonResponse({'code': 10235, 'error': 'No data!'})
+        t_id = post_data.get('t_id')
+        try:
+            Topic.objects.filter(id=t_id).update(watch_count=F('watch_count')+1)
+        except Exception as e:
+            return JsonResponse({'code': 10236, 'error': str(e)})
+        return JsonResponse({'code': 200})
