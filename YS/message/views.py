@@ -16,13 +16,60 @@ from tools.token_check import logging_check, KEY
 # def test(request):
 #     return HttpResponse('<h1>OK</h1>')
 
+def get_parent_reply(parent_reply):
+    if not parent_reply:
+        return {}
+    return {
+        'r_id': parent_reply.id,
+        'user': parent_reply.user.nickname,
+        'content': parent_reply.content,
+        'like_count': parent_reply.like_count,
+        'created_time': parent_reply.created_time
+    }
+
+
+def get_replys(replys):
+    if not replys:
+        return []
+    replys_list = []
+    for reply in replys:
+        replys_list.append({
+            'r_id': reply.id,
+            'user': reply.user.nickname,
+            'content': reply.content,
+            'created_time': reply.created_time,
+            'like_count': reply.like_count,
+            'reply_count': reply.reply_count,
+            'parent_reply': get_parent_reply(reply.parent_reply)
+        })
+    return replys_list
+
+
+def get_messages_by_t_id(t_id):
+    messages = Message.objects.filter(topic_id=t_id).order_by('-created_time')
+    data = []
+    for message in messages:
+        data.append({
+            'm_id': message.id,
+            'user': message.user.nickname,
+            'content': message.content,
+            'created_time': message.created_time,
+            'like_count': message.like_count,
+            'reply_count': message.reply_count,
+            'replys': get_replys(message.replys.all())
+        })
+    return {'code': 10412, 'data': data}
+
+
 @logging_check('POST', 'DELETE')
 def handle_messages(request, t_id=None):
     if request.method == 'GET':
+        # http://127.0.0.1:8000/api/v1/messages/t_id/<t_id>
         if not t_id:
             return JsonResponse({'code': 10401, 'error': 'No topic_id!'})
         t_id = int(t_id)
-        pass
+        res = get_messages_by_t_id(t_id)
+        return JsonResponse(res)
 
     elif request.method == 'POST':
         # json -->  {"t_id","content"}
@@ -40,7 +87,7 @@ def handle_messages(request, t_id=None):
             return JsonResponse({'code': 10402, 'error': str(e)})
         return JsonResponse({'code': 200})
     elif request.method == 'DELETE':
-        # json -->  {"t_id","u_id"->author_id}
+        # json -->  {"m_id","u_id"->author_id}
         user = request.user
         query_delete = request.body
         delete_data = json.loads(query_delete)
