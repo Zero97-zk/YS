@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'user',
     'ytoken',
     'topic',
-    'message'
+    'message',
+    'todo'
 ]
 
 MIDDLEWARE = [
