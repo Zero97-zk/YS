@@ -159,6 +159,17 @@ def avatar(request, id):
     return JsonResponse(res)
 
 
+@logging_check('GET')
+def avoid_login(request):
+    if request.method != 'GET':
+        return JsonResponse({'code': 10012, 'error': 'Method is wrong!'})
+    user = request.user
+    if user.avoid_login:
+        return JsonResponse({'code': 200})
+    return JsonResponse({'code': 10013})
+
+
+
 
 
 

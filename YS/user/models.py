@@ -12,6 +12,8 @@ class User(models.Model):
     create_time = models.DateTimeField('创建时间', auto_now_add=True)
     update_time = models.DateTimeField('更新时间', auto_now=True)
     login_time = models.CharField('最近一次登陆时间', max_length=12, default='')
+    avoid_login = models.BooleanField('免登录', default=False)
+
     # image字段
     # upload_to 存储文件夹 settings.py MEDIA_ROOT + upload_to
     avatar = models.ImageField('头像', upload_to='avatar/', null=True)
