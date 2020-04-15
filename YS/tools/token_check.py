@@ -21,7 +21,6 @@ def logging_check(*method):
             try:
                 token = jwt.decode(token, KEY)
             except Exception as e:
-                print(e)
                 res = {'code':10202, 'error':"Token don't match!"}
                 return JsonResponse(res)
 

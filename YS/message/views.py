@@ -16,15 +16,20 @@ from tools.token_check import logging_check, KEY
 # def test(request):
 #     return HttpResponse('<h1>OK</h1>')
 
+
+def return_format_time(_time):
+    return str(_time)[:19]
+
 def get_parent_reply(parent_reply):
     if not parent_reply:
         return {}
     return {
         'r_id': parent_reply.id,
+        'u_id': parent_reply.user.id,
         'user': parent_reply.user.nickname,
         'content': parent_reply.content,
         'like_count': parent_reply.like_count,
-        'created_time': parent_reply.created_time
+        'created_time': return_format_time(parent_reply.created_time)
     }
 
 
@@ -35,9 +40,11 @@ def get_replys(replys):
     for reply in replys:
         replys_list.append({
             'r_id': reply.id,
+            'u_id': reply.user.id,
+            'u_avatar': str(reply.user.avatar),
             'user': reply.user.nickname,
             'content': reply.content,
-            'created_time': reply.created_time,
+            'created_time': return_format_time(reply.created_time),
             'like_count': reply.like_count,
             'reply_count': reply.reply_count,
             'parent_reply': get_parent_reply(reply.parent_reply)
@@ -51,14 +58,16 @@ def get_messages_by_t_id(t_id):
     for message in messages:
         data.append({
             'm_id': message.id,
+            'u_id': message.user.id,
+            'u_avatar': str(message.user.avatar),
             'user': message.user.nickname,
             'content': message.content,
-            'created_time': message.created_time,
+            'created_time': return_format_time(message.created_time),
             'like_count': message.like_count,
             'reply_count': message.reply_count,
             'replys': get_replys(message.replys.all())
         })
-    return {'code': 10412, 'data': data}
+    return {'code': 200, 'data': data}
 
 
 @logging_check('POST', 'DELETE')
@@ -83,6 +92,7 @@ def handle_messages(request, t_id=None):
         u_id = user.id
         try:
             Message.objects.create(topic_id=t_id, user_id=u_id, content=content)
+            Topic.objects.filter(id=t_id).update(message_count=F('message_count')+1)
         except Exception as e:
             return JsonResponse({'code': 10402, 'error': str(e)})
         return JsonResponse({'code': 200})
@@ -127,16 +137,17 @@ def handle_replys(request):
             except Exception as e:
                 return JsonResponse({'code': 10408, 'error':str(e)})
             try:
-                Reply.objects.create(message_id=m_id, user_id=u_id, content=content,is_second_reply=True, parent_reply_id=parent_reply_id)
+                reply = Reply.objects.create(message_id=m_id, user_id=u_id, content=content,is_second_reply=True, parent_reply_id=parent_reply_id)
             except Exception as e:
                 return JsonResponse({'code':10409, 'error': str(e)})
         else:
             try:
-                Reply.objects.create(message_id=m_id, user_id=u_id, content=content)
+                reply = Reply.objects.create(message_id=m_id, user_id=u_id, content=content)
             except Exception as e:
                 return JsonResponse({'code': 10410, 'error': str(e)})
         try:
             Message.objects.filter(id=m_id).update(reply_count=F('reply_count')+1)
+            Topic.objects.filter(id=reply.message.topic.id).update(message_count=F('message_count')+1)
         except Exception as e:
             return JsonResponse({'code': 10411, 'error': str(e)})
         return JsonResponse({'code': 200})

@@ -20,3 +20,11 @@ class User(models.Model):
 
     class Meta:
         db_table = 'user'
+
+
+class UserFollowUser(models.Model):
+    follow_user = models.ForeignKey(User, related_name='follow_records')
+    followed_user = models.ForeignKey(User, related_name='followed_records')
+
+    class Meta:
+        db_table = 'userfollowuser'

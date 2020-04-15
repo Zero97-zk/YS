@@ -1,12 +1,14 @@
 import json
+import time
 
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, QueryDict
 from django.db.models import F
 
 from user.models import User
-from topic.models import Topic, TopicCollectUser, TopicLikeUser
+from topic.models import Topic, TopicCollectUser, TopicLikeUser, TopicImage
 from tools.token_check import KEY, get_user, logging_check
+
 
 # Create your views here.
 # error code --> 102..
@@ -29,8 +31,10 @@ def rec_obj_to_dict(rec_obj):
         'id': rec_obj.id,
         'type': rec_obj.type,
         'title': rec_obj.title,
+        'introduce': rec_obj.introduce,
         'content': rec_obj.content,
-        'created_time': rec_obj.created_time,
+        'message_count': rec_obj.message_count,
+        'created_time': str(rec_obj.created_time)[:19],
         'updated_time': rec_obj.updated_time,
         'like_count': rec_obj.like_count,
         'watch_count': rec_obj.watch_count,
@@ -63,8 +67,40 @@ def get_topic_by_t_id(t_id, look_user=None):
         return {'code': 10202, 'error': str(e)}
     if (not look_user or look_user != topic.author) and topic.limit == 'private':
         return {'code': 10203, 'error': 'Not topic!'}
+    if look_user == topic.author:
+        prev_topic = Topic.objects.filter(id__gt=t_id, author=topic.author).first()
+        next_topic = Topic.objects.filter(id__lt=t_id, author=topic.author).last()
+    else:
+        prev_topic = Topic.objects.filter(id__gt=t_id, author=topic.author, limit='public').first()
+        next_topic = Topic.objects.filter(id__lt=t_id, author=topic.author, limit='public').last()
+    if prev_topic:
+        prev_id = prev_topic.id
+        prev_title = prev_topic.title
+    else:
+        prev_id = None
+        prev_title = None
+    if next_topic:
+        next_id = next_topic.id
+        next_title = next_topic.title
+    else:
+        next_id = None
+        next_title = None
     data = rec_obj_to_dict(topic)
+    data["next_id"] = next_id
+    data["next_title"] = next_title
+    data['prev_id'] = prev_id
+    data['prev_title'] = prev_title
     return {'code': 200, 'data': data}
+
+
+def get_tag_data(topics):
+    tag_d = {}
+    for topic in topics:
+        if topic.type not in tag_d:
+            tag_d[topic.type] = [rec_obj_to_dict(topic)]
+        else:
+            tag_d[topic.type].append(rec_obj_to_dict(topic))
+    return [{'tag': x, 'data': tag_d[x]} for x in tag_d]
 
 
 def get_topic_by_u_id(u_id, look_user=None):
@@ -76,7 +112,12 @@ def get_topic_by_u_id(u_id, look_user=None):
     except Exception as e:
         return {'code': 10204, 'error': str(e)}
     data = [rec_obj_to_dict(x) for x in topics]
-    return {'code': 200, 'data': data}
+    tag_data = get_tag_data(topics)
+    return {'code': 200, 'data': data, 'tag_data': tag_data}
+
+def get_delete_data(request):
+    print(list(QueryDict(request.body).keys())[0],type(list(QueryDict(request.body).keys())[0]))
+    return list(QueryDict(request.body).keys())[0].get('data')
 
 
 @logging_check('POST', 'PUT', 'DELETE')
@@ -111,7 +152,7 @@ def handle_topics(request, t_id=None, u_id=None):
             topic = Topic.objects.create(**data)
         except Exception as e:
             return JsonResponse({'code': 10206, 'error': str(e)})
-        return JsonResponse({'code': 200, 'data': rec_obj_to_dict(topic)})
+        return JsonResponse({'code': 200, 'topic_id': topic.id, 'author_id':topic.author.id})
 
     elif request.method == 'PUT':
         user = request.user
@@ -162,12 +203,14 @@ def get_collect_by_uid(u_id, look_user=None):
     except Exception as e:
         return {'code': 10217, 'error': str(e)}
     data = [rec_obj_to_dict(x) for x in topics]
-    return{'code': 200, 'data': data}
+    collected_topic_ids = [x.id for x in topics]
+    return{'code': 200, 'data': data, 'topic_ids': collected_topic_ids}
 
 
 @logging_check('POST', 'DELETE')
-def collect_topics(request, u_id=None):
+def collect_topics(request, u_id=None, t_id=None):
     u_id = int(u_id) if u_id else None
+    t_id = int(t_id) if t_id else None
     if request.method == 'GET':
         if not u_id:
             return JsonResponse({'code': 10214, 'error': 'No data!'})
@@ -198,11 +241,8 @@ def collect_topics(request, u_id=None):
         user = request.user
         if not user:
             return JsonResponse({'code': 10218, 'error': 'No data!'})
-        query_delete = request.body
-        delete_data = json.loads(query_delete)
-        if not delete_data or not delete_data.get('t_id'):
+        if not t_id:
             return JsonResponse({'code': 10219, 'error': 'No data!'})
-        t_id = delete_data.get('t_id')
         try:
             collection = TopicCollectUser.objects.get(user_id=user.id, topic_id=t_id)
         except Exception as e:
@@ -221,7 +261,8 @@ def collect_topics(request, u_id=None):
 def like_topics(request, t_id=None):
     t_id = int(t_id) if t_id else None
     if request.method == 'GET':
-        pass
+        likes = TopicLikeUser.objects.filter(topic_id=t_id)
+        return JsonResponse({'code': 200, 'data': [x.user.id for x in likes]})
     elif request.method == 'POST':
         user = request.user
         query_post = request.body
@@ -246,11 +287,8 @@ def like_topics(request, t_id=None):
         user = request.user
         if not user:
             return JsonResponse({'code': 10229, 'error': 'No data!'})
-        query_delete = request.body
-        delete_data = json.loads(query_delete)
-        if not delete_data or not delete_data.get('t_id'):
+        if not t_id:
             return JsonResponse({'code': 10230, 'error': 'No data!'})
-        t_id = delete_data.get('t_id')
         try:
             like = TopicLikeUser.objects.get(user_id=user.id, topic_id=t_id)
         except Exception as e:
@@ -279,3 +317,30 @@ def watch_topics(request):
         except Exception as e:
             return JsonResponse({'code': 10236, 'error': str(e)})
         return JsonResponse({'code': 200})
+
+@logging_check('POST', 'DELETE')
+def topic_image(request):
+    user = request.user
+    if request.method == 'POST':
+        topic_image = request.FILES['topic_image']
+        if not topic_image:
+            return JsonResponse({'code': 10237, 'error': 'Not image'})
+        now_time = str(int(round(time.time() * 1000)))
+        topic_image.name = now_time + '.' + topic_image.name.split('.')[-1]
+        try:
+            img = TopicImage.objects.create(topic_image=topic_image, user=user)
+        except Exception as e:
+            return JsonResponse({'code': 10238, 'error': str(e)})
+        return JsonResponse({'code': 200, 'img_url': 'topicimages/'+topic_image.name, 'img_id': img.id})
+    if request.method == 'DELETE':
+        query_delete = request.body
+        delete_data = json.loads(query_delete)
+        img_id = delete_data.get('img_id')
+        if not img_id:
+            return JsonResponse({'code': 10239, 'error': 'Not img_id'})
+        try:
+            img = TopicImage.objects.get(id=img_id, user=user)
+            img.delete()
+        except Exception as e:
+            return JsonResponse({'code': 10240, 'error': str(e)})
+        return ({'code': 200})

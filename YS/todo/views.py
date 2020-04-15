@@ -53,10 +53,10 @@ def get_index_todos(request):
     } for todo in day_todos]
     return JsonResponse({
         'code':200,
-        'day': day_todos,
-        'week': week_todos,
-        'month': month_todos,
-        'year': year_todos
+        'day': sorted(day_todos, key=lambda x: x["level"]),
+        'week': sorted(week_todos, key=lambda x: x["level"]),
+        'month': sorted(month_todos, key=lambda x: x["level"]),
+        'year': sorted(year_todos, key=lambda x: x["level"])
     })
 
 
@@ -76,7 +76,7 @@ def day_todos(request, year=None, day=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': data})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'day', 'level'}
         query_post = request.body
@@ -145,7 +145,7 @@ def week_todos(request, year=None, week=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': data})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'week', 'level'}
         query_post = request.body
@@ -214,7 +214,7 @@ def month_todos(request, year=None, month=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': data})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'month', 'level'}
         query_post = request.body
@@ -282,7 +282,7 @@ def year_todos(request, year=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': data})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'level'}
         query_post = request.body

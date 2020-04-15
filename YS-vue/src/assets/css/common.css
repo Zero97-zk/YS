@@ -1,0 +1,40 @@
+.outer_box{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.inner_box{
+    width: 105%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+.content_box{
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+}
+.bg_dark_hover:hover{
+    background: rgba(0, 0, 0, 0.4)
+}
+.bg_tint_hover:hover{
+    background:rgba(0, 0, 0, 0)
+}
+.text_red_hover:hover{
+    color: red;
+}
+.text_deepblue_hover:hover{
+    color: #3399ea;
+}
+.shadow_light_hover:hover{
+    box-shadow: 0 0 6px 0 #fff;
+}
+.cursor_pointer{
+    cursor: pointer;
+}
+.bg_dark{
+    background: rgba(0, 0, 0, 0.2);
+}
+.text_deepblue{
+    color: #3399ea;
+}

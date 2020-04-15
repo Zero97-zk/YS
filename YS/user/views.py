@@ -6,7 +6,7 @@ import os
 import platform
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
-from user.models import User
+from user.models import User, UserFollowUser
 from tools.token_check import logging_check, KEY
 from YS.settings import BASE_DIR
 
@@ -20,12 +20,10 @@ from YS.settings import BASE_DIR
 def users(request, id=None):
     id = int(id) if id else None
     if request.method == 'GET':
-        user = None
         try:
             user = User.objects.get(id=int(id))
         except Exception as e:
-            # print(e)
-            pass
+            return JsonResponse({'code': 10014, 'error': str(e)})
         if not user:
             res = {'code': 10001, 'error': 'User does not exist!!'}
             return JsonResponse(res)
@@ -144,10 +142,10 @@ def avatar(request, id):
     # print(platform.system())
     if platform.system() == 'Windows':
         # print(BASE_DIR+'\\'+str(user.avatar).replace('/','\\'))
-        if os.path.exists(BASE_DIR+'\\media\\'+str(user.avatar).replace('/','\\')):
+        if user.avatar and os.path.exists(BASE_DIR+'\\media\\'+str(user.avatar).replace('/','\\')):
             os.remove(BASE_DIR+'\\media\\'+str(user.avatar).replace('/','\\'))
     elif platform.system() == 'Linux':
-        if os.path.exists(BASE_DIR+'/media/'+str(user.avatar)):
+        if user.avatar and os.path.exists(BASE_DIR+'/media/'+str(user.avatar)):
             os.remove(BASE_DIR+'/media/'+str(user.avatar))
     user.avatar = user_avatar
     try:
@@ -165,11 +163,44 @@ def avoid_login(request):
         return JsonResponse({'code': 10012, 'error': 'Method is wrong!'})
     user = request.user
     if user.avoid_login:
+        print(user.avoid_login)
         return JsonResponse({'code': 200})
     return JsonResponse({'code': 10013})
 
 
+# xx的关注
+@logging_check('POST', 'DELETE')
+def follow(request, id):
+    id = int(id) if id else None
+    if request.method == 'GET':
+        follows = UserFollowUser.objects.filter(follow_user_id=id)
+        return JsonResponse({'code': 200, 'data': [x.followed_user.id for x in follows]})
 
+    elif request.method == 'POST':
+        user = request.user
+        try:
+            UserFollowUser.objects.create(follow_user_id=user.id, followed_user_id=id)
+        except Exception as e:
+            return JsonResponse({'code': 10014, 'error': str(e)})
+        return JsonResponse({'code': 200})
+
+    elif request.method == 'DELETE':
+        user = request.user
+        try:
+            follow = UserFollowUser.objects.get(follow_user_id=user.id, followed_user_id=id)
+            follow.delete()
+        except Exception as e:
+            return JsonResponse({'code': 10015, 'error': str(e)})
+        return JsonResponse({'code': 200})
+
+
+# xx的粉丝
+def fans(request,id):
+    id = int(id) if id else None
+    if request.method != 'GET':
+        return JsonResponse({'code': 10016, 'error': 'Method is wrong!'})
+    fans = UserFollowUser.objects.filter(followed_user_id=id)
+    return JsonResponse({'code': 200, 'data': [x.follow_user.id for x in fans]})
 
 
 

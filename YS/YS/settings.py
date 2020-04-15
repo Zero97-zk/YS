@@ -130,6 +130,10 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR,'media'),
+)
+
 # 跨站资源共享服务端设置
 CORS_ORIGIN_ALLOW_ALL = True
 

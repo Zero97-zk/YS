@@ -36,5 +36,13 @@ class TopicCollectUser(models.Model):
     class Meta:
         db_table = 'topiccollectuser'
 
+class TopicImage(models.Model):
+    topic_image = models.ImageField("文章图片", upload_to='topicimages/', null=True)
+    user = models.ForeignKey(User, related_name='topic_images')
+
+    class Meta:
+        db_table = 'topicimages'
+
+
 
 

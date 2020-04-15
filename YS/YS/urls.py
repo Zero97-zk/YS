@@ -30,6 +30,6 @@ urlpatterns = [
     # http://127.0.0.1:8000/api/v1/messages
     url(r'^api/v1/messages/?', include('message.urls')),
     # http://127.0.0.1:8000/api/v1/todos
-    url(r'^api/v1/todos/?', include('todo.urls'))
+    url(r'^api/v1/todos/?', include('todo.urls')),
 
 ]
