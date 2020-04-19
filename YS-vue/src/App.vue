@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <my-header></my-header>
     <router-view/>
   </div>
 </template>
@@ -16,14 +17,4 @@ html,body,#app{
   margin: 0;
   padding:0;
 }
-/* body{
-  background-color: #f5f5f5;
-  min-width: 1000px;
-}
-
-body>.container{
-  width: 1000px;
-  min-width: 1000px;
-  margin: 0 auto;
-} */
 </style>

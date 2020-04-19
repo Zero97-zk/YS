@@ -38,6 +38,10 @@
                                         <p style="margin-bottom: 5px">{{article.introduce}}</p>
                                     </div>
                                     <div class="synopsis_other_info clearfix cursor_pointer">
+                                        <div class="float-left">
+                                            <span class="glyphicon glyphicon-time"></span>
+                                            <span>{{article.created_time}}</span>
+                                        </div>
                                         <div class="float-right">
                                             <span class="glyphicon glyphicon-comment text_deepblue_hover"></span>
                                             <span class="text_deepblue">{{article.message_count}}</span>
@@ -57,13 +61,13 @@
                     </div>
                 </div>
             </div>
-            <div class="con_r float-left">
+            <div class="con_r float-left pt-2">
                 <div class="outer_box">
                     <div class="inner_box" style="width: 106.5%;">
                         <div class="content_box">
                             <div class="personal_info">
                                 <div style="height:50%;">
-                                    <img src="../../static/img/index_bg3.jpg" alt="" style="width:100%;height:100%">
+                                    <img src="../../static/img/index_bg3.jpg" alt="" style="width:100%;height:100%;border-radius:0">
                                 </div>
                                 <div class="personal_avatar">
                                     <img :src="personal_avatar_url" alt="" style="width:100%;height:100%;border-radius:50%;">
@@ -82,7 +86,7 @@
                             </div>
                             <div class="hot_articles">
                                 <h5>
-                                    <span class="glyphicon glyphicon-fire"></span>
+                                    <span class="glyphicon glyphicon-fire" style="color:red;"></span>
                                     <span style="font-weight: bold;">热门总结</span>
                                 </h5>
                                 <ul class="list-unstyled">
@@ -135,7 +139,7 @@ export default {
         },
         get_imgurl(url){
             if (!url){
-                return "../../static/img/index_bg.jpg"
+                return "../../static/img/avatar.png"
             }else{
                 return this.axios.defaults.baseURL+"static/"+url
             }
@@ -171,10 +175,16 @@ export default {
             if (result.code==200){
                 this.all_articles = result.data;
                 this.display_articles = this.all_articles;
-                this.hot_articles = this.all_articles.sort((a,b)=>{
+                var h_art = result.data.slice();
+                this.hot_articles = h_art.sort((a,b)=>{
                     return b.watch_count - a.watch_count
                 }).slice(0, 10);
                 this.tag_list = result.tag_data;
+            }else if(result.code==10202){
+                alert('会话已过期,请重新登陆');
+                localStorage.removeItem('ytoken');
+                localStorage.removeItem('user_id');
+                this.$router.push({name:'Index'})
             }else{
                 alert(result.error)
             }

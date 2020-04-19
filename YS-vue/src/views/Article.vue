@@ -218,6 +218,11 @@ export default {
                     if (result.code==200){
                         this.is_liked=!this.is_liked;
                         this.article_like_count--;
+                    }else if(result.code==10202){
+                        alert('会话已过期,请重新登陆');
+                        localStorage.removeItem('ytoken');
+                        localStorage.removeItem('user_id');
+                        this.$router.push({name:'Index'})
                     }else{
                         alert(result.error)
                     }
@@ -227,6 +232,11 @@ export default {
                     if (result.code==200){
                         this.is_liked=!this.is_liked;
                         this.article_like_count++;
+                    }else if(result.code==10202){
+                        alert('会话已过期,请重新登陆');
+                        localStorage.removeItem('ytoken');
+                        localStorage.removeItem('user_id');
+                        this.$router.push({name:'Index'})
                     }else{
                         alert(result.error)
                     }
@@ -240,6 +250,11 @@ export default {
                     if (result.code==200){
                         this.is_collected=!this.is_collected;
                         this.article_collect_count--;
+                    }else if(result.code==10202){
+                        alert('会话已过期,请重新登陆');
+                        localStorage.removeItem('ytoken');
+                        localStorage.removeItem('user_id');
+                        this.$router.push({name:'Index'})
                     }else{
                         alert(result.error)
                     }
@@ -249,6 +264,11 @@ export default {
                     if (result.code==200){
                         this.is_collected=!this.is_collected;
                         this.article_collect_count++;
+                    }else if(result.code==10202){
+                        alert('会话已过期,请重新登陆');
+                        localStorage.removeItem('ytoken');
+                        localStorage.removeItem('user_id');
+                        this.$router.push({name:'Index'})
                     }else{
                         alert(result.error)
                     }
@@ -308,6 +328,11 @@ export default {
                         if (result.code==200){
                             this.message_count++;
                             this.get_messages();
+                        }else if(result.code==10202){
+                            alert('会话已过期,请重新登陆');
+                            localStorage.removeItem('ytoken');
+                            localStorage.removeItem('user_id');
+                            this.$router.push({name:'Index'})
                         }else{
                             alert(result.error)
                         }
@@ -319,6 +344,11 @@ export default {
                         if (result.code==200){
                             this.message_count++;
                             this.get_messages();
+                        }else if(result.code==10202){
+                            alert('会话已过期,请重新登陆');
+                            localStorage.removeItem('ytoken');
+                            localStorage.removeItem('user_id');
+                            this.$router.push({name:'Index'})
                         }else{
                             alert(result.error)
                         }
@@ -330,6 +360,11 @@ export default {
                         if (result.code==200){
                             this.message_count++;
                             this.get_messages()
+                        }else if(result.code==10202){
+                            alert('会话已过期,请重新登陆');
+                            localStorage.removeItem('ytoken');
+                            localStorage.removeItem('user_id');
+                            this.$router.push({name:'Index'})
                         }else{
                             alert(result.error)
                         }
@@ -365,16 +400,26 @@ export default {
                 deleteFollow(this.author_id).then(result=>{
                     if (result.code==200){
                         this.is_attention=!this.is_attention
+                    }else if(result.code==10202){
+                        alert('会话已过期,请重新登陆');
+                        localStorage.removeItem('ytoken');
+                        localStorage.removeItem('user_id');
+                        this.$router.push({name:'Index'})
                     }else{
-                        alert(result.code)
+                        alert(result.error)
                     }
                 })
             }else{
                 createFollow(this.author_id).then(result=>{
                     if (result.code==200){
                         this.is_attention=!this.is_attention
+                    }else if(result.code==10202){
+                        alert('会话已过期,请重新登陆');
+                        localStorage.removeItem('ytoken');
+                        localStorage.removeItem('user_id');
+                        this.$router.push({name:'Index'})
                     }else{
-                        alert(result.code)
+                        alert(result.error)
                     }
                 })
             }
@@ -416,6 +461,11 @@ export default {
                 this.previous_id = result.data.prev_id;
                 this.next_id = result.data.next_id;
                 this.message_count = result.data.message_count;
+            }else if(result.code==10202){
+                alert('会话已过期,请重新登陆');
+                localStorage.removeItem('ytoken');
+                localStorage.removeItem('user_id');
+                this.$router.push({name:'Index'})
             }else{
                 alert(result.error)
             }
@@ -445,8 +495,13 @@ export default {
                 this.hot_conclusion = result.data.sort((a,b)=>{
                     return b.watch_count-a.watch_count
                 }).slice(0,10);
+            }else if(result.code==10202){
+                alert('会话已过期,请重新登陆');
+                localStorage.removeItem('ytoken');
+                localStorage.removeItem('user_id');
+                this.$router.push({name:'Index'})
             }else{
-                alert(result.error);
+                alert(result.error)
             }
         });
         getUserInfo(user_id).then(result=>{
@@ -477,6 +532,11 @@ export default {
             createWatch({t_id:this.article_id}).then(result=>{
                 if (result.code==200){
                     this.article_watch_count++;
+                }else if(result.code==10202){
+                    alert('会话已过期,请重新登陆');
+                    localStorage.removeItem('ytoken');
+                    localStorage.removeItem('user_id');
+                    this.$router.push({name:'Index'})
                 }else{
                     alert(result.error)
                 }
@@ -487,6 +547,7 @@ export default {
 </script>
 <style scoped>
 #article{
+    padding-top: 40px;
     width: 100%;
     height: 100%;
     background-image: linear-gradient(to bottom,  #72afd5, #b0d7ee);
@@ -600,7 +661,7 @@ export default {
 .attention_btn:hover{
     background: red;
     color: #fff;
-    border: 1px solid red;
+    border-color: red;
 }
 .box_shadow{
     box-shadow: 0 0 4px 0;
@@ -665,6 +726,6 @@ export default {
 .bg_attention_red{
     background:red;
     color: #fff;
-    border: 1px solid red;
+    border-color: red;
 }
 </style>

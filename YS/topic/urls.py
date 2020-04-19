@@ -16,7 +16,12 @@ urlpatterns = [
     # http://127.0.0.1:8000/api/v1/topics/watch
     url(r'^watch$', views.watch_topics),
     # http://127.0.0.1:8000/api/v1/topics/image
-    url(r'^image$', views.topic_image)
+    url(r'^image$', views.topic_image),
+    # http://127.0.0.1:8000/api/v1/topics/day
+    url(r'^day$', views.day_topics),
+    # http://127.0.0.1:8000/api/v1/topics/title
+    url(r'^title$', views.get_title_topics),
+    url(r'^nickname$', views.get_nickname_topics)
 
 
 ]

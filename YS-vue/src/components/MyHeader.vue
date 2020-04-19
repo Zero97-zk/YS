@@ -1,10 +1,10 @@
 <template>
     <header class="clearfix">
-        <div class="row text-white mx-0 open">
-            <div class="col-1"><span class="glyphicon glyphicon-folder-close" @click="app_to_down"></span></div>
-            <div class="col-2 offset-md-8" @click="go_login"><span>{{login_or_nickname()}}</span></div>
-            <div class="avatar" v-show="is_logged"><img :src="avatar_url" alt="avatar"></div>
-            <div class="col-1" @click="go_register"><span>{{register_or_logout()}}</span></div>
+        <div class="text-white mx-0 open clearfix">
+            <div class="float-left ml-1"><span class="glyphicon glyphicon-folder-close" @click="app_to_down"></span></div>
+            <div class="avatar float-right mr-4" v-show="is_logged"><img :src="avatar_url" alt="avatar"></div>
+            <div class="float-right mr-4" @click="go_register"><span>{{register_or_logout()}}</span></div>
+            <div class="float-right mr-2" @click="go_login"><span>{{login_or_nickname()}}</span></div>
         </div>
         <div id="apps" :style="{top:top}">
             <div class="app_close"><span class="glyphicon glyphicon-folder-open " @click="app_to_up"></span></div>
@@ -69,9 +69,19 @@ export default {
             }
         },
         to_selfinfo(){
-
+            this.app_to_up();
+            var user_id = localStorage.getItem("user_id");
+            if(user_id){
+                this.$router.push({path:'/userinfo', query:{user_id:user_id}})
+            }else{
+                var to_login = confirm('登录后才可以进入个人中心，是否选择先去登录?');
+                if (to_login){
+                    this.$router.push({name:'Index'})
+                }
+            }
         },
         to_conclusion(){
+            this.app_to_up();
             var user_id = localStorage.getItem("user_id");
             if(user_id){
                 this.$router.push({name:'Personal',query:{personal_id:user_id}})
@@ -80,6 +90,7 @@ export default {
             }
         },
         to_todo(){
+            this.app_to_up();
             var user_id = localStorage.getItem("user_id");
             if(user_id){
                 this.$router.push({path:'/todo'})

@@ -26,7 +26,7 @@ export default {
     name: "Conclusion",
     data(){
         return {
-            nav_select: "personal"
+            nav_select: ""
         }
     },
     methods:{
@@ -39,13 +39,35 @@ export default {
             switch (e.target.textContent){
                 case "论坛页":
                     this.nav_select="forum";
+                    this.$router.push({name:'Forum'});
                     break;
                 case "总结页":
-                    this.nav_select="personal";
-                    break
+                    var personal_id = localStorage.getItem('user_id');
+                    if (personal_id){
+                        this.nav_select="personal";
+                        this.$router.push({name:'Personal', query:{personal_id:personal_id}});
+                    }else{
+                        var to_login = confirm('登录后才能进入此页，是否选择先去登录?');
+                        if (to_login){
+                            this.$router.push({path:''})
+                        }
+                    }
+                    break;
+                case "写总结":
+                    var { href } = this.$router.resolve({path:'/md'})
+                    window.open(href, '_blank');
             }
+        },
+        
+    },
+    created(){
+        var user_id = localStorage.getItem('user_id');
+        if (user_id){
+            this.nav_select = "personal";
+        }else{
+            this.nav_select = 'forum';
         }
-    }
+    },
 }
 </script>
 <style scoped>
@@ -78,6 +100,5 @@ export default {
     width: 100%;
     height: 100%;
     padding-top: 40px;
-    /* border: 1px solid red; */
 }
 </style>

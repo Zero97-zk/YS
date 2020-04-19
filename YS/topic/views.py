@@ -1,3 +1,4 @@
+import datetime
 import json
 import time
 
@@ -41,6 +42,7 @@ def rec_obj_to_dict(rec_obj):
         'collect_count': rec_obj.collect_count,
         'author_id': rec_obj.author.id,
         'author_name': rec_obj.author.nickname,
+        'author_avatar': str(rec_obj.author.avatar),
         'limit': rec_obj.limit
 
     } if rec_obj else {}
@@ -48,16 +50,22 @@ def rec_obj_to_dict(rec_obj):
 
 def get_index_topics(query_dict):
     topic_type = get_topic_type(query_dict)
+    hot_topics = []
     try:
         if not topic_type:
-            topics = Topic.objects.filter(limit='public').order_by('-created_time')[:10]
+            topics = Topic.objects.filter(limit='public').order_by('-created_time')[:100]
+            now = datetime.datetime.now()
+            start = datetime.datetime(now.year, now.month, 1)
+            end = datetime.datetime(now.year, now.month + 1, 1)
+            hot_topics = Topic.objects.filter(limit='public', created_time__gt=start, created_time__lt=end).order_by('-watch_count')[:10]
+            hot_topics = [rec_obj_to_dict(x) for x in hot_topics]
         else:
             topics = Topic.objects.filter(limit='public', type=topic_type).order_by('-created_time')[:100]
     except Exception as e:
         return {'code': 10201, 'error': str(e)}
-    topics = sorted(topics, key=lambda x: -x.watch_count)
+    # topics = sorted(topics, key=lambda x: -x.watch_count)
     data = [rec_obj_to_dict(x) for x in topics]
-    return {'code': 200, 'data': data}
+    return {'code': 200, 'data': data, 'hot_topics': hot_topics}
 
 
 def get_topic_by_t_id(t_id, look_user=None):
@@ -189,6 +197,39 @@ def handle_topics(request, t_id=None, u_id=None):
             return JsonResponse({'code': 10213, 'error': str(e)})
         return JsonResponse({'code': 200})
 
+def day_topics(request):
+    if request.method != 'GET':
+        return JsonResponse({'code': 10241, 'error': 'Method is wrong!'})
+    year = request.GET.get('year')
+    month = request.GET.get('month')
+    day = request.GET.get('day')
+    if not year or not month or not day:
+        return JsonResponse({'code': 10242, 'error': 'Data is not completed!'})
+    topics = Topic.objects.filter(created_time__gt=datetime.datetime(int(year), int(month), int(day)), created_time__lt=datetime.datetime(int(year), int(month), int(day)+1), limit='public').order_by('-watch_count')
+    data = [rec_obj_to_dict(x) for x in topics]
+    return JsonResponse({'code': 200, 'data': data})
+
+def get_title_topics(request):
+    if request.method != 'GET':
+        return JsonResponse({'code': 10242, 'error': 'Method is wrong!'})
+    title = request.GET.get('title')
+    if not title:
+        return JsonResponse({'code': 10243, 'error': 'Data is not completed!'})
+    topics = Topic.objects.filter(title__contains=title, limit='public').order_by('-watch_count')
+    data = [rec_obj_to_dict(x) for x in topics]
+    return JsonResponse({'code': 200, 'data': data})
+
+def get_nickname_topics(request):
+    if request.method != 'GET':
+        return JsonResponse({'code': 10243, 'error': 'Method is wrong!'})
+    nickname = request.GET.get('nickname')
+    if not nickname:
+        return JsonResponse({'code': 10244, 'error': 'Data is not completed!'})
+    users = User.objects.filter(nickname=nickname)
+    user_ids = [x.id for x in users]
+    topics = Topic.objects.filter(author_id__in=user_ids, limit='public').order_by('-watch_count')
+    data = [rec_obj_to_dict(x) for x in topics]
+    return JsonResponse({'code': 200, 'data': data})
 
 def get_collect_by_uid(u_id, look_user=None):
     try:
@@ -344,3 +385,4 @@ def topic_image(request):
         except Exception as e:
             return JsonResponse({'code': 10240, 'error': str(e)})
         return ({'code': 200})
+

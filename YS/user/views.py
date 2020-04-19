@@ -27,31 +27,18 @@ def users(request, id=None):
         if not user:
             res = {'code': 10001, 'error': 'User does not exist!!'}
             return JsonResponse(res)
-        if request.GET.keys():
-        # 有查询字符串获取相应数据
-            data = {}
-            for key in request.GET.keys():
-                if key == 'password':
-                    continue
-                if key == 'avatar':
-                    data[key] = str(getattr(user, key))
-                    continue
-                if hasattr(user,key):
-                    data[key] = getattr(user, key)
-            res = {'code': 200, 'id':int(id), 'data':data}
-            return JsonResponse(res)
-        else:
-        # 无查询字符串获取用户全量有信息
-            res = {'code': 200, 'id':int(id), 'data':{
-                'username': user.username,
-                'nickname': user.nickname,
-                'email': user.email,
-                'phone': user.phone,
-                'description': user.description,
-                'login_time': user.login_time,
-                'avatar': str(user.avatar)
-            }}
-            return JsonResponse(res)
+        data = {
+            'id': int(id),
+            'username': user.username,
+            'nickname': user.nickname,
+            'email': user.email,
+            'phone': user.phone,
+            'description': user.description,
+            'login_time': user.login_time,
+            'avatar': str(user.avatar)
+        }
+        res = {'code': 200, 'data': data}
+        return JsonResponse(res)
 
     elif request.method == 'POST':
         # 注册
@@ -128,7 +115,6 @@ def avatar(request, id):
     if request.method != 'POST':
         res = {'code':10009, 'error': 'Request method is wrong!!'}
         return JsonResponse(res)
-
     user = request.user
     if int(id) != user.id:
         res = {'code':10010, 'error': "You can't update other avatar"}
@@ -174,7 +160,13 @@ def follow(request, id):
     id = int(id) if id else None
     if request.method == 'GET':
         follows = UserFollowUser.objects.filter(follow_user_id=id)
-        return JsonResponse({'code': 200, 'data': [x.followed_user.id for x in follows]})
+        data = [x.followed_user.id for x in follows]
+        detail_data = [{
+            'id': x.followed_user.id,
+            'nickname': x.followed_user.nickname,
+            'avatar': str(x.followed_user.avatar)
+        } for x in follows]
+        return JsonResponse({'code': 200, 'data': data, 'detail_data': detail_data})
 
     elif request.method == 'POST':
         user = request.user
@@ -200,7 +192,13 @@ def fans(request,id):
     if request.method != 'GET':
         return JsonResponse({'code': 10016, 'error': 'Method is wrong!'})
     fans = UserFollowUser.objects.filter(followed_user_id=id)
-    return JsonResponse({'code': 200, 'data': [x.follow_user.id for x in fans]})
+    data = [x.follow_user.id for x in fans]
+    detail_data = [{
+        'id': x.follow_user.id,
+        'nickname': x.follow_user.nickname,
+        'avatar': str(x.follow_user.avatar)
+    } for x in fans]
+    return JsonResponse({'code': 200, 'data': data, 'detail_data': detail_data})
 
 
 

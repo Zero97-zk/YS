@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <div class="md_header row mx-0">
+        <div class="md_header row mx-0 text-center">
             <div class="col-10 h-100 from-group">
                 <input type="text" class="form-control" id="title" placeholder="请输入标题" v-model="title_text">
             </div>
@@ -64,6 +64,11 @@ export default {
             createImage(formdata).then(result=>{
                 if (result.code==200){
                     this.$refs.md.$img2Url(pos,this.axios.defaults.baseURL+"static/"+result.img_url)
+                }else if(result.code==10202){
+                    alert('会话已过期,请重新登陆');
+                    localStorage.removeItem('ytoken');
+                    localStorage.removeItem('user_id');
+                    this.$router.push({name:'Index'})
                 }else{
                     alert(result.error)
                 }
@@ -88,10 +93,13 @@ export default {
             createArticle(data).then(result=>{
                 if (result.code==200){
                     this.$router.push({path:'/article', query:{article_id:result.topic_id,author_id:result.author_id}});
-                    // this.close_inner_issue();
-                    // alert(result.topic_id);
+                }else if(result.code==10202){
+                    alert('会话已过期,请重新登陆');
+                    localStorage.removeItem('ytoken');
+                    localStorage.removeItem('user_id');
+                    this.$router.push({name:'Index'})
                 }else{
-                    alert(result.code, result.error);
+                    alert(result.error)
                 }
             })
         }
@@ -112,20 +120,20 @@ export default {
 </script>
 <style scoped>
 #md{
-    position: absolute;
+    padding-top: 60px;
     width: 100%;
     height: 100%;
 }
 .md_header{
     width: 100%;
-    height: 6%;
+    height: 8%;
     /* border: 1px solid red; */
 }
 .md_header>div+div{
     margin-left: -1%;
 }
 .md_body{
-    height: 94%;
+    height: 92%;
 }
 .btn_issue{
     width: 90px;

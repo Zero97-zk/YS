@@ -25,7 +25,6 @@ def ytoken(request):
     username = js_obj.get('username')
     password = js_obj.get('password')
     avoid_login = js_obj.get('avoid_login')
-    print(avoid_login)
     if not username or not password:
         res =  {'code': 10303, 'error': 'Data must complete!'}
         return JsonResponse(res)
@@ -42,7 +41,7 @@ def ytoken(request):
         return JsonResponse(res)
 
     now = time.time()
-    payload = {'id': user.id, 'login_time': login_time, 'exp': now+3600*24}
+    payload = {'id': user.id, 'login_time': login_time, 'exp': now+3600*48}
     token = jwt.encode(payload, KEY)
     user.login_time = login_time
     user.avoid_login = avoid_login

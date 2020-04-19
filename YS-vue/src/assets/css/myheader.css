@@ -2,16 +2,15 @@ header>.open{
     position: fixed;
     height: 40px;
     width:100%;
+    left:0;
     top:0;
-    background-image: linear-gradient(to right, #9a7cdf, #39cec7);
+    background-image: linear-gradient(to right, #3399ea, #72afd5);
     line-height: 40px;
-    text-align: center;
     margin:0;
-    box-shadow: 0 0 5px 0px #3a3636;
+    box-shadow: 0 0 2px 0 #000;
     z-index: 1;
 }
 header>.open>.avatar{
-    position: absolute;
     right: 50px;
     width: 40px;
     height: 40px;
@@ -21,13 +20,14 @@ header>.open>.avatar:hover{
     cursor: pointer;
 }
 .avatar>img{
-    width: 90%;
-    height: 90%;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
+    margin-top: -2px;
     box-shadow: 0 0 5px 0;
 }
 header>.open>div span{
-    padding: 8px 14px;
+    padding: 8px 10px;
     font-weight: 520;
     transition: all 0.5s;
     color: #fff;
@@ -38,23 +38,13 @@ header>.open>div span:hover{
     cursor: pointer;
 
 }
-header>.open>div:nth-child(1){
-    padding-left: 0;
-    font-size: 1.25rem;
-}
-header>.open>div:nth-child(1)>span{
-    margin-left: -2.8rem;
-}
-header>.open>div:nth-child(2){
-    margin-right: -5rem;
-}
 #apps{
     position: fixed;
     height: 70%;
     width: 100%;
-    background-image: linear-gradient(to bottom right, #2a6da9, #337ab7, #33b7b7, #337ab7, #2a6da9);
-    z-index: 999;
-    transition: all 0.4s;
+    background-image: linear-gradient(to bottom right, #3399ea, #b0d7ee, #3399ea);
+    z-index: 9999;
+    transition: all 0.3s;
     box-shadow: 0 0 12px 0px #3a3636;
 }
 #apps>.app_close span{

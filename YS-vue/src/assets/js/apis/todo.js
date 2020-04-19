@@ -44,6 +44,15 @@ function dayTodos(type, year, day, data){
                 }).then(result=>{
                     resolve(result.data)
                 })
+            }else if(type=='delete'){
+                axios.delete(url,{
+                    headers,
+                    params:{
+                        todo_id: parseInt(year)
+                    }
+                }).then(result=>{
+                    resolve(result.data)
+                })
             }
             
         }
@@ -73,6 +82,15 @@ function weekTodos(type, year, week, data=null){
             }else if(type=="put"){
                 axios.put(url, data,{
                     headers
+                }).then(result=>{
+                    resolve(result.data)
+                })
+            }else if(type=='delete'){
+                axios.delete(url,{
+                    headers,
+                    params:{
+                        todo_id: parseInt(year)
+                    }
                 }).then(result=>{
                     resolve(result.data)
                 })
@@ -108,6 +126,15 @@ function monthTodos(type, year, month, data=null){
                 }).then(result=>{
                     resolve(result.data)
                 })
+            }else if(type=='delete'){
+                axios.delete(url,{
+                    headers,
+                    params:{
+                        todo_id: parseInt(year)
+                    }
+                }).then(result=>{
+                    resolve(result.data)
+                })
             }
             
         }
@@ -137,6 +164,15 @@ function yearTodos(type, year, data=null){
             }else if(type=="put"){
                 axios.put(url, data,{
                     headers
+                }).then(result=>{
+                    resolve(result.data)
+                })
+            }else if(type=='delete'){
+                axios.delete(url,{
+                    headers,
+                    params:{
+                        todo_id: parseInt(year)
+                    }
                 }).then(result=>{
                     resolve(result.data)
                 })

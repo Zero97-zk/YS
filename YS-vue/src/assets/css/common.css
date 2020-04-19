@@ -1,3 +1,7 @@
+img{
+    width:100%;
+    height: 100%;
+}
 .outer_box{
     width: 100%;
     height: 100%;
@@ -14,27 +18,49 @@
     height: 100%;
     padding: 10px;
 }
+.cursor_pointer{
+    cursor: pointer;
+}
+.cursor_default{
+    cursor: default;
+}
 .bg_dark_hover:hover{
     background: rgba(0, 0, 0, 0.4)
 }
 .bg_tint_hover:hover{
     background:rgba(0, 0, 0, 0)
 }
-.text_red_hover:hover{
-    color: red;
+.bg_white_hover:hover{
+    background: #fff;
+    color: #000;
 }
-.text_deepblue_hover:hover{
-    color: #3399ea;
-}
-.shadow_light_hover:hover{
-    box-shadow: 0 0 6px 0 #fff;
-}
-.cursor_pointer{
-    cursor: pointer;
+.bg_deepblue_hover:hover{
+    background: #3399ea;
+    color: #fff;
 }
 .bg_dark{
     background: rgba(0, 0, 0, 0.2);
 }
+.bg_theme_dark{
+    background-color: #72afd5;
+}
+.bg_theme_tint{
+    background-color: #b0d7ee;
+}
+.text_red_hover:hover{
+    color: red;
+}
+.text_deepblue_hover:hover{
+    color: #3399ea !important;
+}
+.shadow_light_hover:hover{
+    box-shadow: 0 0 6px 0 #fff;
+}
 .text_deepblue{
     color: #3399ea;
 }
+.text_red{
+    color:red;
+}
+
+

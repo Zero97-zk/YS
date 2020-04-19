@@ -40,7 +40,7 @@ li {
 .wh_content_all {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC",
     "Helvetica Neue", STHeiti, "Microsoft Yahei", Tahoma, Simsun, sans-serif;
-  background-color: #666;
+  background-color: rgba(0, 0, 0, 0.3);
   width: 100%;
   overflow: hidden;
   padding-bottom: 8px;
@@ -124,7 +124,8 @@ wh_content_item_tag {
   color: #bfbfbf;
 }
 .wh_content_item .wh_isToday {
-  background: yellow;
+  background: #fff;
+  color: #444;
   border-radius: 100px;
 }
 .wh_content_item .wh_chose_day {

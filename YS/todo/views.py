@@ -53,10 +53,10 @@ def get_index_todos(request):
     } for todo in day_todos]
     return JsonResponse({
         'code':200,
-        'day': sorted(day_todos, key=lambda x: x["level"]),
-        'week': sorted(week_todos, key=lambda x: x["level"]),
-        'month': sorted(month_todos, key=lambda x: x["level"]),
-        'year': sorted(year_todos, key=lambda x: x["level"])
+        'day': sorted(day_todos, key=lambda x: (x["state"],x["level"])),
+        'week': sorted(week_todos, key=lambda x: (x["state"],x["level"])),
+        'month': sorted(month_todos, key=lambda x: (x["state"],x["level"])),
+        'year': sorted(year_todos, key=lambda x: (x["state"],x["level"]))
     })
 
 
@@ -76,7 +76,7 @@ def day_todos(request, year=None, day=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: (x["state"],x["level"]))})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'day', 'level'}
         query_post = request.body
@@ -117,11 +117,9 @@ def day_todos(request, year=None, day=None):
     elif request.method == 'DELETE':
         # json --> {'todo_id'}
         user = request.user
-        query_delete = request.body
-        delete_data = json.loads(query_delete)
-        if not delete_data or not delete_data.get('todo_id'):
+        todo_id = int(request.GET.get('todo_id'))
+        if not todo_id:
             return JsonResponse({'code': 10506, 'error': 'Not data!'})
-        todo_id = delete_data.get('todo_id')
         try:
             DayTodo.objects.get(user_id = user.id, id=todo_id).delete()
         except Exception as e:
@@ -145,7 +143,7 @@ def week_todos(request, year=None, week=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: (x["state"],x["level"]))})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'week', 'level'}
         query_post = request.body
@@ -186,11 +184,9 @@ def week_todos(request, year=None, week=None):
     elif request.method == 'DELETE':
         # json --> {'todo_id'}
         user = request.user
-        query_delete = request.body
-        delete_data = json.loads(query_delete)
-        if not delete_data or not delete_data.get('todo_id'):
+        todo_id = int(request.GET.get('todo_id'))
+        if not todo_id:
             return JsonResponse({'code': 10512, 'error': 'Not data!'})
-        todo_id = delete_data.get('todo_id')
         try:
             WeekTodo.objects.get(user_id=user.id, id=todo_id).delete()
         except Exception as e:
@@ -214,7 +210,7 @@ def month_todos(request, year=None, month=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: (x["state"],x["level"]))})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'month', 'level'}
         query_post = request.body
@@ -255,11 +251,9 @@ def month_todos(request, year=None, month=None):
     elif request.method == 'DELETE':
         # json --> {'todo_id'}
         user = request.user
-        query_delete = request.body
-        delete_data = json.loads(query_delete)
-        if not delete_data or not delete_data.get('todo_id'):
+        todo_id = int(request.GET.get('todo_id'))
+        if not todo_id:
             return JsonResponse({'code': 10519, 'error': 'Not data!'})
-        todo_id = delete_data.get('todo_id')
         try:
             MonthTodo.objects.get(user_id=user.id, id=todo_id).delete()
         except Exception as e:
@@ -282,7 +276,7 @@ def year_todos(request, year=None):
             "level": todo.level,
             "state": todo.state
         } for todo in todos]
-        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: x["level"])})
+        return JsonResponse({'code': 200, 'data': sorted(data, key=lambda x: (x["state"],x["level"]))})
     elif request.method == 'POST':
         # json --> {'content', 'year', 'level'}
         query_post = request.body
@@ -322,11 +316,9 @@ def year_todos(request, year=None):
     elif request.method == 'DELETE':
         # json --> {'todo_id'}
         user = request.user
-        query_delete = request.body
-        delete_data = json.loads(query_delete)
-        if not delete_data or not delete_data.get('todo_id'):
+        todo_id = int(request.GET.get('todo_id'))
+        if not todo_id:
             return JsonResponse({'code': 10526, 'error': 'Not data!'})
-        todo_id = delete_data.get('todo_id')
         try:
             YearTodo.objects.get(user_id=user.id, id=todo_id).delete()
         except Exception as e:

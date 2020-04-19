@@ -8,9 +8,15 @@ import Article from '../views/Article'
 import Conclusion from '../views/Conclusion'
 import Forum from '../views/Forum'
 import Personal from '../views/Personal'
+import Userinfo from '../views/Userinfo'
 
 
 Vue.use(Router)
+
+const routerPush = Router.prototype.push
+Router.prototype.push = function push(location) {
+  return routerPush.call(this, location).catch(error=> error)
+}
 
 export default new Router({
   routes: [
@@ -50,6 +56,11 @@ export default new Router({
           component: Personal
         }
       ]
+    },
+    {
+      path: '/userinfo',
+      name: 'Userinfo',
+      component: Userinfo
     }
   ]
 })

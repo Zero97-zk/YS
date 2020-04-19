@@ -23,10 +23,8 @@ def logging_check(*method):
             except Exception as e:
                 res = {'code':10202, 'error':"Token don't match!"}
                 return JsonResponse(res)
-
             id = token.get('id')
             login_time = token.get('login_time')
-            exp = token.get('exp')
             try:
                 user = User.objects.get(id=id)
             except Exception as e:
@@ -34,11 +32,7 @@ def logging_check(*method):
                 res = {'code':10203, 'error':'Not found user!'}
                 return JsonResponse(res)
             if login_time != user.login_time:
-                res = {'code': 10204, 'error':'Please login again!'}
-                return JsonResponse(res)
-            now = time.time()
-            if now > exp:
-                res = {'code':10205, 'error':'Please login again!'}
+                res = {'code': 10202, 'error':'Please login again!'}
                 return JsonResponse(res)
             request.user = user
             return func(request, *args, **kwargs)
