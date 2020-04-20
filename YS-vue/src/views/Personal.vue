@@ -67,7 +67,7 @@
                         <div class="content_box">
                             <div class="personal_info">
                                 <div style="height:50%;">
-                                    <img src="../../static/img/index_bg3.jpg" alt="" style="width:100%;height:100%;border-radius:0">
+                                    <img src="../../static/img/index_bg.jpg" alt="" style="width:100%;height:100%;border-radius:0">
                                 </div>
                                 <div class="personal_avatar">
                                     <img :src="personal_avatar_url" alt="" style="width:100%;height:100%;border-radius:50%;">
@@ -141,7 +141,7 @@ export default {
             if (!url){
                 return "../../static/img/avatar.png"
             }else{
-                return this.axios.defaults.baseURL+"static/"+url
+                return this.axios.defaults.baseURL+"static_backend/"+url
             }
         },
         select_display(tag=null){

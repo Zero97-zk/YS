@@ -64,7 +64,8 @@ export default {
                 this.$router.push("/")
             }else{
                 localStorage.removeItem("ytoken");
-                localStorage.removeItem("user_id")
+                localStorage.removeItem("user_id");
+                this.is_logged = false;
                 this.$router.push("/")
             }
         },
@@ -114,7 +115,7 @@ export default {
                     if (!result.data.data.avatar){
                         this.avatar_url = "../../static/img/avatar.png";
                     }else{
-                        this.avatar_url = this.axios.defaults.baseURL+"static/"+result.data.data.avatar;
+                        this.avatar_url = this.axios.defaults.baseURL+"static_backend/"+result.data.data.avatar;
                     }
                 }else{
                     alert(result.data.error);

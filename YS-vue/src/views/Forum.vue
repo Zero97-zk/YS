@@ -147,9 +147,9 @@ export default {
         },
         get_imgurl(url){
             if (!url){
-                return "../../static/img/index_bg.jpg"
+                return "../../static/img/avatar.png"
             }else{
-                return this.axios.defaults.baseURL+"static/"+url
+                return this.axios.defaults.baseURL+"static_backend/"+url
             }
         },
         to_article(article_id,author_id){

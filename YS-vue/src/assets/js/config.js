@@ -1,4 +1,4 @@
-var baseURL="http://localhost:5050/api/v1"
+var baseURL="http://47.103.208.205/api/v1"
 export {
     baseURL
 }

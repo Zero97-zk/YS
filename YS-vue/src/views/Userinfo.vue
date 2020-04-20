@@ -299,7 +299,7 @@ export default {
             if (!url){
                 return "../../static/img/avatar.png"
             }else{
-                return this.axios.defaults.baseURL+"static/"+url
+                return this.axios.defaults.baseURL+"static_backend/"+url
             }
         },
         get_user_info(){

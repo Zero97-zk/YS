@@ -13,7 +13,7 @@ Vue.component("MyFooter", MyFooter)
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL="http://localhost:5050/";
+axios.defaults.baseURL="http://47.103.208.205/";
 // axios.defaults.withCredentials=true;
 
 Vue.prototype.axios=axios;

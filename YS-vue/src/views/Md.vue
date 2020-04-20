@@ -63,7 +63,7 @@ export default {
             formdata.append('topic_image', $file);
             createImage(formdata).then(result=>{
                 if (result.code==200){
-                    this.$refs.md.$img2Url(pos,this.axios.defaults.baseURL+"static/"+result.img_url)
+                    this.$refs.md.$img2Url(pos,this.axios.defaults.baseURL+"static_backend/"+result.img_url)
                 }else if(result.code==10202){
                     alert('会话已过期,请重新登陆');
                     localStorage.removeItem('ytoken');
